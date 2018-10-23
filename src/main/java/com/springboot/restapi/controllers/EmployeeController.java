@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 import com.springboot.restapi.services.EmployeeService;
@@ -26,6 +27,11 @@ public class EmployeeController {
 
     @Autowired
     private EmployeeService employeeService;
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
+
+    public EmployeeController(BCryptPasswordEncoder bCryptPasswordEncoder){
+        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+    }
 
     /**
      * Retrieve All employees
@@ -65,15 +71,16 @@ public class EmployeeController {
      * @param ucBuilder
      * @return
      */
-    @RequestMapping( method = RequestMethod.POST)
+    @RequestMapping(method = RequestMethod.POST)
     public ResponseEntity<?> createEmployee(@RequestBody Employee employee, UriComponentsBuilder ucBuilder) {
         logger.info("Creating Employee : {}", employee);
 
         if (employeeService.employeeExists(employee)) {
-            logger.error("Unable to create. A Employee with name {} already exists", employee.getName());
+            logger.error("Unable to create. A Employee with name {} already exists", employee.getUsername());
             return new ResponseEntity<>(new CustomError("Unable to create. A Employee with name " +
-                    employee.getName() + " already exist."),HttpStatus.CONFLICT);
+                    employee.getUsername() + " already exist."),HttpStatus.CONFLICT);
         }
+        employee.setPassword(bCryptPasswordEncoder.encode(employee.getPassword()));
         employeeService.saveEmployee(employee);
 
         HttpHeaders headers = new HttpHeaders();
@@ -99,7 +106,7 @@ public class EmployeeController {
                     HttpStatus.NOT_FOUND);
         }
 
-        currentEmployee.setName(employee.getName());
+        currentEmployee.setUsername(employee.getUsername());
 
         employeeService.updateEmployee(currentEmployee);
         return new ResponseEntity<>(currentEmployee, HttpStatus.OK);

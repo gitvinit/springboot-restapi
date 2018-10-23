@@ -22,10 +22,10 @@ public class EmployeeServiceImpl implements EmployeeService{
         return employeeRepository.findById(id).orElse(null);
     }
 
-    public Employee findByName(String name) {
+    public Employee findByUserName(String username) {
         Iterable<Employee> employees = employeeRepository.findAll();
         for(Employee Employee : employees){
-            if(Employee.getName().equalsIgnoreCase(name)){
+            if(Employee.getUsername().equalsIgnoreCase(username)){
                 return Employee;
             }
         }

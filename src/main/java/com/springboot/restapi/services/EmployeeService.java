@@ -8,7 +8,7 @@ import com.springboot.restapi.models.Employee;
 public interface EmployeeService {
     Employee findById(long id);
 
-    Employee findByName(String name);
+    Employee findByUserName(String name);
 
     void saveEmployee(Employee Employee);
 
