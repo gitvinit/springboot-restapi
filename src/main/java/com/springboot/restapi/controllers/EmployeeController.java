@@ -50,13 +50,13 @@ public class EmployeeController {
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     public ResponseEntity<?> getEmployee(@PathVariable("id") long id) {
         logger.info("Fetching Employee with id {}", id);
-        Employee Employee = employeeService.findById(id);
-        if (Employee == null) {
+        Employee employee = employeeService.findById(id);
+        if (employee == null) {
             logger.error("Employee with id {} not found.", id);
             return new ResponseEntity<>(new CustomError("Employee with id " + id
                     + " not found"), HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<>(Employee, HttpStatus.OK);
+        return new ResponseEntity<>(employee, HttpStatus.OK);
     }
 
     /**
@@ -95,7 +95,7 @@ public class EmployeeController {
 
         if (currentEmployee == null) {
             logger.error("Unable to update. Employee with id {} not found.", id);
-            return new ResponseEntity<>(new CustomError("Unable to upate. Employee with id " + id + " not found."),
+            return new ResponseEntity<>(new CustomError("Unable to update. Employee with id " + id + " not found."),
                     HttpStatus.NOT_FOUND);
         }
 

@@ -14,6 +14,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.mockito.BDDMockito.given;
@@ -21,6 +22,10 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringRunner.class)
+/**
+ * WebMvcTest is really a unit test of your controller if it has dependency,
+ * you'll have to provide them yourself (either a config or a mock of some kind)
+ */
 @WebMvcTest(EmployeeController.class)
 public class EmployeeControllerTest {
 
@@ -36,8 +41,8 @@ public class EmployeeControllerTest {
 
         Employee alex = new Employee();
 
-        List<Employee> allEmployees = new ArrayList<>();
-        allEmployees.add(alex);
+        List<Employee> allEmployees = new ArrayList<>(Arrays.asList(alex));
+        //allEmployees.add(alex);
 
         given(service.findAllEmployees()).willReturn(allEmployees);
 
@@ -60,5 +65,21 @@ public class EmployeeControllerTest {
         mvc.perform(get("/api/employees/4")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    public void getSingleEmployeeNotFound()
+            throws Exception {
+
+        Employee alex = new Employee();
+
+        List<Employee> allEmployees = new ArrayList<>();
+        allEmployees.add(alex);
+
+        given(service.findById(Mockito.eq(1))).willReturn(alex);
+
+        mvc.perform(get("/api/employees/4")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
     }
 }
